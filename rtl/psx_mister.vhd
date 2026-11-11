@@ -228,6 +228,14 @@ entity psx_mister is
       Analog1YP4            : in  signed(7 downto 0);
       Analog2XP4            : in  signed(7 downto 0);
       Analog2YP4            : in  signed(7 downto 0);
+      AnalogL2P1            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogR2P1            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogL2P2            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogR2P2            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogL2P3            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogR2P3            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogL2P4            : in  unsigned(7 downto 0) := (others => '0');
+      AnalogR2P4            : in  unsigned(7 downto 0) := (others => '0');
       multitap              : in  std_logic;
       multitapDigital       : in  std_logic;
       multitapAnalog        : in  std_logic;
@@ -501,6 +509,8 @@ begin
       joypad1.Analog1Y      => Analog1YP1,
       joypad1.Analog2X      => Analog2XP1,
       joypad1.Analog2Y      => Analog2YP1,
+      joypad1.AnalogL2      => AnalogL2P1,
+      joypad1.AnalogR2      => AnalogR2P1,
       joypad1_rumble        => RumbleDataP1,
 
       joypad2.PadPortEnable => PadPortEnable2,
@@ -536,6 +546,8 @@ begin
       joypad2.Analog1Y      => Analog1YP2,
       joypad2.Analog2X      => Analog2XP2,
       joypad2.Analog2Y      => Analog2YP2,
+      joypad2.AnalogL2      => AnalogL2P2,
+      joypad2.AnalogR2      => AnalogR2P2,
       joypad2_rumble        => RumbleDataP2,
 
       joypad3.PadPortEnable => '1',
@@ -571,6 +583,8 @@ begin
       joypad3.Analog1Y      => Analog1YP3,
       joypad3.Analog2X      => Analog2XP3,
       joypad3.Analog2Y      => Analog2YP3,
+      joypad3.AnalogL2      => AnalogL2P3,
+      joypad3.AnalogR2      => AnalogR2P3,
       joypad3_rumble        => RumbleDataP3,
 
       joypad4.PadPortEnable => '1',
@@ -606,6 +620,8 @@ begin
       joypad4.Analog1Y      => Analog1YP4,
       joypad4.Analog2X      => Analog2XP4,
       joypad4.Analog2Y      => Analog2YP4,
+      joypad4.AnalogL2      => AnalogL2P4,
+      joypad4.AnalogR2      => AnalogR2P4,
       joypad4_rumble        => RumbleDataP4,
 
       multitap              => multitap,

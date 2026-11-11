@@ -39,6 +39,8 @@ type joypad_t is record
    Analog1Y    : signed(7 downto 0);
    Analog2X    : signed(7 downto 0);
    Analog2Y    : signed(7 downto 0);
+   AnalogL2    : unsigned(7 downto 0);
+   AnalogR2    : unsigned(7 downto 0);
 end record joypad_t;
 
 end package pJoypad;
