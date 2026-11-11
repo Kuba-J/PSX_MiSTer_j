@@ -118,6 +118,13 @@ architecture arch of joypad_pad is
 
    signal joypad          : joypad_t;
 
+   signal negconStickI    : unsigned(7 downto 0);
+   signal negconStickII   : unsigned(7 downto 0);
+   signal negconStickL    : unsigned(7 downto 0);
+   signal negconI         : std_logic_vector(7 downto 0);
+   signal negconII        : std_logic_vector(7 downto 0);
+   signal negconL         : std_logic_vector(7 downto 0);
+
    signal digitalPadSave  : std_logic := '0';
    signal analogPadSave   : std_logic := '0';
    signal rumbleOnFirst   : std_logic := '0';
@@ -215,6 +222,34 @@ begin
 
    joypads <= (joypad1, joypad2, joypad3, joypad4);
    joypad  <= joypads(joypad_index);
+
+   negconStickI <=
+      (1 + shift_left(not unsigned(joypad.Analog1Y),1)) when (joypad.WheelMap = '1' and to_integer(joypad.Analog1Y) < 0) else
+      (1 + shift_left(not unsigned(joypad.Analog2Y),1)) when (joypad.WheelMap = '0' and to_integer(joypad.Analog2Y) < 0) else
+      (others => '0');
+
+   negconStickII <=
+      (1 + shift_left(not unsigned(joypad.Analog2Y),1)) when (joypad.WheelMap = '1' and to_integer(joypad.Analog2Y) < 0) else
+      (1 + shift_left(    unsigned(joypad.Analog2Y),1)) when (joypad.WheelMap = '0' and to_integer(joypad.Analog2Y) > 0) else
+      (others => '0');
+
+   negconStickL <=
+      (1 + shift_left(not unsigned(joypad.Analog2X),1)) when (to_integer(joypad.Analog2X) < 0) else
+      (others => '0');
+
+   negconI <=
+      x"FF"                              when (joypad.KeyCross = '1' or (joypad.KeyR2 = '1' and joypad.AnalogR2 = 0)) else
+      std_logic_vector(joypad.AnalogR2)  when (joypad.AnalogR2 > negconStickI) else
+      std_logic_vector(negconStickI);
+
+   negconII <=
+      x"FF"                              when (joypad.KeySquare = '1' or (joypad.KeyL2 = '1' and joypad.AnalogL2 = 0)) else
+      std_logic_vector(joypad.AnalogL2)  when (joypad.AnalogL2 > negconStickII) else
+      std_logic_vector(negconStickII);
+
+   negconL <=
+      x"FF"                              when (joypad.KeyL1 = '1') else
+      std_logic_vector(negconStickL);
    
    process (clk1x)
       variable mouseIncX            : signed(9 downto 0) := (others => '0');
@@ -1068,21 +1103,7 @@ begin
                            end if;
 
                         when NEGCONANALOGI =>
-                           receiveBuffer   <= "00000000";
-                           if (joypad.KeyCross = '1' or joypad.KeyR2 = '1') then
-                              -- Buttons are Buttons and full throttle
-                              receiveBuffer   <= "11111111";
-                           elsif (joypad.WheelMap) then
-                              if (to_integer(joypad.Analog1Y) < 0) then
-                                 receiveBuffer   <= std_logic_vector(1 + shift_left(not to_unsigned(to_integer(joypad.Analog1Y),8),1));
-                              end if;
-                           elsif ( to_integer(joypad.Analog2Y) < 0) then
-                              -- Buttons are right stick up
-                              -- Due to half resolution of the stick its range of -128 to 1 is mapped to 0x03 to 0xFF
-                              receiveBuffer   <= std_logic_vector(1 + shift_left(not to_unsigned(to_integer(joypad.Analog2Y),8),1));
-                           else
-                              receiveBuffer   <= "00000000";
-                           end if;
+                           receiveBuffer   <= negconI;
                            receiveValid    <= '1';
                            controllerState <= NEGCONANALOGII;
                            ack             <= '1';
@@ -1096,21 +1117,7 @@ begin
                            end if;
 
                         when NEGCONANALOGII =>
-                           receiveBuffer   <= "00000000";
-                           if (joypad.KeySquare = '1' or joypad.KeyL2 = '1') then
-                              -- Buttons are Buttons and full throttle
-                              receiveBuffer   <= "11111111";
-                           elsif (joypad.WheelMap) then
-                              if (to_integer(joypad.Analog2Y) < 0) then
-                                 receiveBuffer   <= std_logic_vector(1 + shift_left(not to_unsigned(to_integer(joypad.Analog2Y),8),1));
-                              end if;
-                           elsif ( to_integer(joypad.Analog2Y) > 0) then
-                              -- Buttons are right stick down
-                              -- Due to half resolution of the stick its range of 1 to 127 is mapped to 0x03 to 0xFF
-                              receiveBuffer   <= std_logic_vector(1 + shift_left(to_unsigned(to_integer(joypad.Analog2Y),8),1));
-                           else
-                              receiveBuffer   <= "00000000";
-                           end if;
+                           receiveBuffer   <= negconII;
                            receiveValid    <= '1';
                            controllerState <= NEGCONANALOGL;
                            ack             <= '1';
@@ -1124,16 +1131,7 @@ begin
                            end if;
 
                         when NEGCONANALOGL =>
-                           -- Ran out of analog buttons, ideally analog triggers would be supported and a layout
-                           -- R2->I, L2->II, AnalogR->L would be possible, enabling I/II being independent when analog and have analog L
-                           receiveBuffer   <= "00000000";
-                           if (joypad.KeyL1 = '1') then
-                              receiveBuffer   <= "11111111";
-                           elsif (joypad.WheelMap) then
-                              if (to_integer(joypad.Analog2X) < 0) then
-                                 receiveBuffer   <= std_logic_vector(1 + shift_left(not to_unsigned(to_integer(joypad.Analog2X),8),1));
-                           end if;
-                           end if;
+                           receiveBuffer   <= negconL;
                            receiveValid    <= '1';
                            controllerState <= IDLE;
 
