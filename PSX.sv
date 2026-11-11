@@ -373,6 +373,15 @@ wire [15:0] joystick_analog_r2;
 wire [15:0] joystick_analog_l3;
 wire [15:0] joystick_analog_r3;
 
+wire  [7:0] joystick_lt0;
+wire  [7:0] joystick_rt0;
+wire  [7:0] joystick_lt1;
+wire  [7:0] joystick_rt1;
+wire  [7:0] joystick_lt2;
+wire  [7:0] joystick_rt2;
+wire  [7:0] joystick_lt3;
+wire  [7:0] joystick_rt3;
+
 wire [7:0] paddle_0;
 
 wire [24:0] mouse;
@@ -448,6 +457,14 @@ hps_io #(.CONF_STR(CONF_STR), .WIDE(1), .VDNUM(4), .BLKSZ(3)) hps_io
    .joystick_r_analog_2(joystick_analog_r2),
    .joystick_l_analog_3(joystick_analog_l3),
    .joystick_r_analog_3(joystick_analog_r3),
+   .joystick_lt_analog_0(joystick_lt0),
+   .joystick_rt_analog_0(joystick_rt0),
+   .joystick_lt_analog_1(joystick_lt1),
+   .joystick_rt_analog_1(joystick_rt1),
+   .joystick_lt_analog_2(joystick_lt2),
+   .joystick_rt_analog_2(joystick_rt2),
+   .joystick_lt_analog_3(joystick_lt3),
+   .joystick_rt_analog_3(joystick_rt3),
    .ps2_mouse(mouse),
    .joystick_0_rumble(paused ? 16'h0000 : joystick1_rumble),
    .joystick_1_rumble(paused ? 16'h0000 : joystick2_rumble),
@@ -1118,6 +1135,14 @@ psx
    .Analog1YP4(joystick_analog_l3[15:8]),
    .Analog2XP4(joystick_analog_r3[7:0]),
    .Analog2YP4(joystick_analog_r3[15:8]),
+   .AnalogL2P1(joystick_lt0),
+   .AnalogR2P1(joystick_rt0),
+   .AnalogL2P2(joystick_lt1),
+   .AnalogR2P2(joystick_rt1),
+   .AnalogL2P3(joystick_lt2),
+   .AnalogR2P3(joystick_rt2),
+   .AnalogL2P4(joystick_lt3),
+   .AnalogR2P4(joystick_rt3),
    .RumbleDataP1(joystick1_rumble),
    .RumbleDataP2(joystick2_rumble),
    .RumbleDataP3(joystick3_rumble),
